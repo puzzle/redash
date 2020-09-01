@@ -104,11 +104,7 @@ function createGeoJsonLayer(options, { color, rows }) {
 
   each(rows, (row) => {
 
-  // json array'ify string for features
-  var geoJsonData = row
-  geoJsonData.features = JSON.parse(row.features);
-
-  var geoJsonLayer = L.geoJSON(geoJsonData, { style: myStyle });
+  var geoJsonLayer = L.geoJSON(JSON.parse(row.features), { style: myStyle });
 
   result.addLayer(geoJsonLayer);
 
