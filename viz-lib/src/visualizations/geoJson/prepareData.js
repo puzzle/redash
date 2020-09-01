@@ -2,6 +2,7 @@ import d3 from "d3";
 import { isNil, extend, map, filter, groupBy, omit } from "lodash";
 
 export default function prepareData(data, options) {
+  console.log("got here");
   const colorScale = d3.scale.category10();
 
   const { classify, geoJsonColName } = options;

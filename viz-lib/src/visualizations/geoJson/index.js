@@ -3,7 +3,7 @@ import Renderer from "./Renderer";
 import Editor from "./Editor";
 
 export default {
-  type: "GEOJSON",
+  type: "geoJson",
   name: "Map (geoJson)",
   getOptions,
   Renderer,
