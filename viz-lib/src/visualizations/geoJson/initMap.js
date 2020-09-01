@@ -26,75 +26,10 @@ L.Icon.Default.mergeOptions({
 
 delete L.Icon.Default.prototype._getIconUrl;
 
-const iconAnchors = {
-  marker: [14, 32],
-  circle: [10, 10],
-  rectangle: [11, 11],
-  "circle-dot": [1, 2],
-  "rectangle-dot": [1, 2],
-  doughnut: [8, 8],
-};
-
-const popupAnchors = {
-  rectangle: [0, -3],
-  circle: [1, -3],
-};
-
-const createHeatpointMarker = (lat, lon, color) =>
-  L.circleMarker([lat, lon], { fillColor: color, fillOpacity: 0.9, stroke: false });
-
-L.MarkerClusterIcon = L.DivIcon.extend({
-  options: {
-    color: null,
-    className: "marker-cluster",
-    iconSize: new L.Point(40, 40),
-  },
-  createIcon(...args) {
-    const color = chroma(this.options.color);
-    const textColor = chooseTextColorForBackground(color);
-    const borderColor = color.alpha(0.4).css();
-    const backgroundColor = color.alpha(0.8).css();
-
-    const icon = L.DivIcon.prototype.createIcon.call(this, ...args);
-    icon.innerHTML = `
-      <div style="background: ${backgroundColor}">
-        <span style="color: ${textColor}">${toString(this.options.html)}</span>
-      </div>
-    `;
-    icon.style.background = borderColor;
-    return icon;
-  },
-});
-L.markerClusterIcon = (...args) => new L.MarkerClusterIcon(...args);
-
-function createIconMarker(lat, lon, { iconShape, iconFont, foregroundColor, backgroundColor, borderColor }) {
-  const icon = L.BeautifyIcon.icon({
-    iconShape,
-    icon: iconFont,
-    iconSize: iconShape === "rectangle" ? [22, 22] : false,
-    iconAnchor: iconAnchors[iconShape],
-    popupAnchor: popupAnchors[iconShape],
-    prefix: "fa",
-    textColor: foregroundColor,
-    backgroundColor,
-    borderColor,
-  });
-
-  return L.marker([lat, lon], { icon });
-}
-
-function createMarkerClusterGroup(color) {
-  return L.markerClusterGroup({
-    iconCreateFunction(cluster) {
-      return L.markerClusterIcon({ color, html: cluster.getChildCount() });
-    },
-  });
-}
-
 function createGeoJsonLayer(options, { color, rows }) {
-  const { classify, clusterMarkers, customizeMarkers } = options;
+  const { classify } = options;
 
-  const result = clusterMarkers ? createMarkerClusterGroup(color) : L.featureGroup();
+  const result = L.featureGroup();
 
   var myStyle = {
     "color": "#ff7800",
@@ -106,62 +41,12 @@ function createGeoJsonLayer(options, { color, rows }) {
 
   // json array'ify string for features
   var geoJsonData = row
-  geoJsonData.features = JSON.parse(row.features);
+  //geoJsonData.features = JSON.parse(row.features);
 
-  var geoJsonLayer = L.geoJSON(geoJsonData, { style: myStyle });
+  var geoJsonLayer = L.geoJSON(JSON.parse(row.features), { });
 
   result.addLayer(geoJsonLayer);
 
-  });
-
-  return result;
-}
-
-function createMarkersLayer(options, { color, points }) {
-  const { classify, clusterMarkers, customizeMarkers } = options;
-
-  const result = clusterMarkers ? createMarkerClusterGroup(color) : L.featureGroup();
-
-  // create markers
-  each(points, ({ lat, lon, row }) => {
-    const rowCopy = clone(row);
-    rowCopy[options.latColName] = lat;
-    rowCopy[options.lonColName] = lon;
-
-    let marker;
-    if (classify) {
-      marker = createHeatpointMarker(lat, lon, color);
-    } else {
-      if (customizeMarkers) {
-        marker = createIconMarker(lat, lon, options);
-      } else {
-        marker = L.marker([lat, lon]);
-      }
-    }
-
-    if (options.tooltip.enabled) {
-      if (options.tooltip.template !== "") {
-        marker.bindTooltip(sanitize(formatSimpleTemplate(options.tooltip.template, rowCopy)));
-      } else {
-        marker.bindTooltip(`
-          <strong>${lat}, ${lon}</strong>
-        `);
-      }
-    }
-
-    if (options.popup.enabled) {
-      if (options.popup.template !== "") {
-        marker.bindPopup(sanitize(formatSimpleTemplate(options.popup.template, rowCopy)));
-      } else {
-        marker.bindPopup(`
-          <ul style="list-style-type: none; padding-left: 0">
-            <li><strong>${lat}, ${lon}</strong>
-            ${map(row, (v, k) => `<li>${k}: ${v}</li>`).join("")}
-          </ul>
-        `);
-      }
-    }
-    result.addLayer(marker);
   });
 
   return result;

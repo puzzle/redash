@@ -12,9 +12,9 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
     () =>
       difference(
         map(data.columns, c => c.name),
-        [options.latColName, options.lonColName, options.classify]
+        [options.geoJsonColName, options.classify]
       ),
-    [data, options.latColName, options.lonColName, options.classify]
+    [data, options.geoJsonColName, options.classify]
   );
 
   return (
@@ -27,6 +27,22 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
           onChange={geoJsonColName => onOptionsChange({ geoJsonColName })}>
           {map(getColumns(options.geoJsonColName, unusedColumns), col => (
             <Select.Option key={col} data-test={"Map.Editor.GeoJsonName." + col}>
+              {col}
+            </Select.Option>
+          ))}
+        </Select>
+      </Section>
+
+      <Section>
+        <Select
+          label="Group By"
+          data-test="Map.Editor.GroupBy"
+          allowClear
+          placeholder="none"
+          value={options.classify || undefined}
+          onChange={column => onOptionsChange({ classify: column || null })}>
+          {map(getColumns(options.classify, unusedColumns), col => (
+            <Select.Option key={col} data-test={"Map.Editor.GroupBy." + col}>
               {col}
             </Select.Option>
           ))}
