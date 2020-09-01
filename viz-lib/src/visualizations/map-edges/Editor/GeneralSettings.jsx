@@ -21,7 +21,7 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
     <React.Fragment>
       <Section>
         <Select
-          label="Latitude Column Name"
+          label="Latitude Column 1 Name"
           data-test="Map.Editor.LatitudeColumnName"
           value={options.latColName}
           onChange={latColName => onOptionsChange({ latColName })}>
@@ -35,7 +35,7 @@ export default function GeneralSettings({ options, data, onOptionsChange }) {
 
       <Section>
         <Select
-          label="Longitude Column Name"
+          label="Longitude Column 1 Name"
           data-test="Map.Editor.LongitudeColumnName"
           value={options.lonColName}
           onChange={lonColName => onOptionsChange({ lonColName })}>

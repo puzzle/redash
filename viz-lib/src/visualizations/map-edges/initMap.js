@@ -48,8 +48,6 @@ const createHeatpointMarker = (lat, lon, latEnd, lonEnd, color) => {
   return L.polyline(latlngs, { color });
 };
 
-// L.circleMarker([latEnd, lonEnd], { fillColor: color, fillOpacity: 0.9, stroke: false });
-
 L.MarkerClusterIcon = L.DivIcon.extend({
   options: {
     color: null,
